@@ -7,6 +7,10 @@ spring:
     #main:
     # allow-bean-definition-overriding: true
   # Database
+  security:
+    user:
+      name: admin
+      password: password
   datasource:
     driver-class-name: org.postgresql.Driver
     # For correct works with docker-compose, we need to change "localhost" to a service name, take from docker-compose.yml
@@ -24,11 +28,11 @@ spring:
     #open-in-view: false
     #generate-ddl: true
   # Keycloak Configuration
-  security:
-    oauth2:
-      resource-server:
-        jwt:
-          issuer-uri: http://localhost:8180/realms/automobile-realm
+#  security:
+#    oauth2:
+#      resource-server:
+#        jwt:
+#          issuer-uri: http://localhost:8180/realms/automobile-realm
 # JMS configuration
   jms:
     pub-sub-domain: true

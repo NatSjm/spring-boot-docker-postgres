@@ -200,7 +200,10 @@ public class AutomobileRestController implements AutomobileResource, AutomobileO
     public ResponseEntity<Automobile> pushMessage(@RequestBody Automobile automobile) {
         try {
             Topic autoTopic = Objects.requireNonNull(jmsTemplate
-                    .getConnectionFactory()).createConnection().createSession().createTopic("AutoTopic");
+                    .getConnectionFactory())
+                    .createConnection()
+                    .createSession()
+                    .createTopic("AutoTopic");
             Automobile savedAutomobile = repository.save(automobile);
             log.info("\u001B[32m" + "Sending Automobile with id: " + savedAutomobile.getId() + "\u001B[0m");
             jmsTemplate.convertAndSend(autoTopic, savedAutomobile);
