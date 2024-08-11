@@ -15,4 +15,6 @@ public interface AutomobileRepository extends JpaRepository<Automobile, Long> {
     List<Automobile> findByNameAndColor(String name, String color);
 
     List<Automobile> findByColorStartsWith(String colorStartWith, Pageable page);
+
+    long countByColor(String color);
 }

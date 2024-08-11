@@ -20,7 +20,7 @@
         <java.version>17</java.version>
         <openApi.version>2.1.0</openApi.version>
         <keycloak.version>21.0.2</keycloak.version>
-        <org.project-lombok.version>1.18.28</org.project-lombok.version>
+        <org.project-lombok.version>1.18.30</org.project-lombok.version>
     </properties>
 
     <dependencies>
