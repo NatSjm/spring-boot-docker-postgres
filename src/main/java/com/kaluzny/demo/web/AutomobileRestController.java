@@ -4,10 +4,10 @@ import com.kaluzny.demo.domain.Automobile;
 import com.kaluzny.demo.domain.AutomobileRepository;
 import com.kaluzny.demo.exception.AutoWasDeletedException;
 import com.kaluzny.demo.exception.ThereIsNoSuchAutoException;
+import com.kaluzny.demo.service.AutomobileTopicService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.annotation.PostConstruct;
-import jakarta.jms.Topic;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +26,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -37,7 +35,7 @@ import java.util.stream.Collectors;
 public class AutomobileRestController implements AutomobileResource, AutomobileOpenApi, JMSPublisher {
 
     private final AutomobileRepository repository;
-    private final JmsTemplate jmsTemplate;
+    private final AutomobileTopicService automobileTopicService;
 
     public static double getTiming(Instant start, Instant end) {
         return Duration.between(start, end).toMillis();
@@ -198,18 +196,6 @@ public class AutomobileRestController implements AutomobileResource, AutomobileO
     @PostMapping("/message")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Automobile> pushMessage(@RequestBody Automobile automobile) {
-        try {
-            Topic autoTopic = Objects.requireNonNull(jmsTemplate
-                    .getConnectionFactory())
-                    .createConnection()
-                    .createSession()
-                    .createTopic("AutoTopic");
-            Automobile savedAutomobile = repository.save(automobile);
-            log.info("\u001B[32m" + "Sending Automobile with id: " + savedAutomobile.getId() + "\u001B[0m");
-            jmsTemplate.convertAndSend(autoTopic, savedAutomobile);
-            return new ResponseEntity<>(savedAutomobile, HttpStatus.OK);
-        } catch (Exception exception) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return automobileTopicService.pushMessage(automobile);
     }
 }
